@@ -34,7 +34,9 @@
     "alert": {
       "title": "ERROR",
       "content_1": "Add info failed, fields had invalid numbers",
-      "closeText": "Close"
+      "closeText": "Close",
+      "content_2": "Add info failed, bookshelf count invalid",
+      "content_3": "Add info failed, slot {0} count invalid"
     }
   }
 }
