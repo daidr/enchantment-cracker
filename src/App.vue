@@ -23,7 +23,7 @@
     <template v-if="true">
       <router-view v-slot="{ Component }">
         <MCFrame class="main" :class="{ disabled: pageStore.isPageLoading }">
-          <p class="select-none font-bold text-16px leading-19px">
+          <p class="select-none font-bold text-16px leading-20px">
             {{ t($route.meta.pageTitle || "title.unknown") }}
           </p>
           <component :is="Component" />
@@ -37,7 +37,7 @@
 
 <style scoped lang="scss">
   .lang-switch {
-    @apply fixed top-0 right-0 h-10 w-30 mt-2 mr-2;
+    @apply fixed top-0 right-0 mt-2 mr-2;
 
     select {
       @apply w-full h-full;
