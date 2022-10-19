@@ -1,35 +1,40 @@
 {
-    "locate": {
-        "en": "English",
-        "zh-cn": "简体中文"
-    },
-    "title": {
-        "main": "EnchantmentCracker",
-        "unknown": "Unknown",
-        "cracker": "Enchantment Cracker",
-        "calculator": "Enchantment Calculator",
-        "about": "About"
-    },
-    "enchCrack": {
-        "xpSeed1": "XP Seed 1",
-        "xpSeed1_tooltip": "The first consecutive XP seed",
-        "xpSeed2": "XP Seed 2",
-        "xpSeed2_tooltip": "The second consecutive XP seed",
-        "calculate": "Calculate Seed",
-        "bookshelves_tooltip": "The number of bookshelves exposed to the enchanting table",
-        "xpCost1_tooltip": "The number on the right of the top slot",
-        "xpCost2_tooltip": "The number on the right of the middle slot",
-        "xpCost3_tooltip": "The number on the right of the bottom slot",
-        "check": "Check",
-        "check_tooltip": "Use this information to narrow down the possible XP seeds",
-        "reset": "Reset",
-        "reset_tooltip": "Reset the XP seed cracker so a new XP seed can be cracked",
-        "impossible": "No possible seeds",
-        "result": "XP seed: {0}",
-        "remaining": "Possible seeds: {0}",
-        "remaining_thousand": "Possible seeds: {0}k",
-        "remaining_million": "Possible seeds: {0}M",
-        "remaining_billion": "Possible seeds: {0}B",
-        "progress": "Progress: {0}%"
+  "locate": {
+    "en": "English",
+    "zh-cn": "简体中文"
+  },
+  "title": {
+    "main": "EnchantmentCracker",
+    "unknown": "Unknown",
+    "cracker": "Enchantment Cracker",
+    "calculator": "Enchantment Calculator",
+    "about": "About"
+  },
+  "enchCrack": {
+    "xpSeed1": "XP Seed 1",
+    "xpSeed1_tooltip": "The first consecutive XP seed",
+    "xpSeed2": "XP Seed 2",
+    "xpSeed2_tooltip": "The second consecutive XP seed",
+    "calculate": "Calculate Seed",
+    "bookshelves_tooltip": "The number of bookshelves exposed to the enchanting table",
+    "xpCost1_tooltip": "The number on the right of the top slot",
+    "xpCost2_tooltip": "The number on the right of the middle slot",
+    "xpCost3_tooltip": "The number on the right of the bottom slot",
+    "check": "Check",
+    "check_tooltip": "Use this information to narrow down the possible XP seeds",
+    "reset": "Reset",
+    "reset_tooltip": "Reset the XP seed cracker so a new XP seed can be cracked",
+    "impossible": "No possible seeds",
+    "result": "XP seed: {0}",
+    "remaining": "Possible seeds: {0}",
+    "remaining_thousand": "Possible seeds: {0}k",
+    "remaining_million": "Possible seeds: {0}M",
+    "remaining_billion": "Possible seeds: {0}B",
+    "progress": "Progress: {0}%",
+    "alert": {
+      "title": "ERROR",
+      "content_1": "Add info failed, fields had invalid numbers",
+      "closeText": "Close"
     }
+  }
 }
