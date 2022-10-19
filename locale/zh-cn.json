@@ -19,6 +19,17 @@
         "bookshelves_tooltip": "附魔台周围的有效书架数量",
         "xpCost1_tooltip": "第一个附魔所需的经验等级",
         "xpCost2_tooltip": "第二个附魔所需的经验等级",
-        "xpCost3_tooltip": "第三个附魔所需的经验等级"
+        "xpCost3_tooltip": "第三个附魔所需的经验等级",
+        "check": "检查",
+        "check_tooltip": "使用该功能来缩小可能的XP种子的范围",
+        "reset": "重置",
+        "reset_tooltip": "重置当前的XP种子破解器来破解新的XP种子",
+        "impossible": "找不到可能的XP种子",
+        "result": "XP种子: {0}",
+        "remaining": "可能的种子数: {0}",
+        "remaining_thousand": "可能的种子数: {0}千个",
+        "remaining_million": "可能的种子数: {0}百万个",
+        "remaining_billion": "可能的种子数: {0}十亿个",
+        "progress": "进度: {0}%"
     }
 }
