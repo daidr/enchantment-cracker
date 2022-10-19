@@ -1,4 +1,5 @@
 <script setup>
+  import { createAlertModal } from "@/components/Modal";
   import { usePageStore } from "@/store/page";
   import { onMounted, ref } from "vue";
   import { useI18n } from "vue-i18n";
@@ -7,6 +8,78 @@
   const { t } = useI18n();
 
   const pageStore = usePageStore();
+
+  const bookshelves = ref("");
+  const xpcost1 = ref("");
+  const xpcost2 = ref("");
+  const xpcost3 = ref("");
+
+  const onCheckBtnClick = () => {
+    const bookshelvesValue = parseInt(bookshelves.value);
+    const xpcost1Value = parseInt(xpcost1.value);
+    const xpcost2Value = parseInt(xpcost2.value);
+    const xpcost3Value = parseInt(xpcost3.value);
+
+    // 检查是否能够转换为数字
+    if (
+      isNaN(bookshelvesValue) ||
+      isNaN(xpcost1Value) ||
+      isNaN(xpcost2Value) ||
+      isNaN(xpcost3Value)
+    ) {
+      createAlertModal({
+        title: t("enchCrack.alert.title"),
+        content: t("enchCrack.alert.content_1"),
+        hideOk: true,
+        cancelText: t("enchCrack.alert.closeText"),
+      });
+      return;
+    }
+
+    // 检查书架数量是否在0~15之间
+    if (bookshelvesValue < 0 || bookshelvesValue > 15) {
+      createAlertModal({
+        title: t("enchCrack.alert.title"),
+        content: t("enchCrack.alert.content_2"),
+        hideOk: true,
+        cancelText: t("enchCrack.alert.closeText"),
+      });
+      return;
+    }
+
+    // 检查第一附魔等级是否在0~30之间
+    if (xpcost1Value < 0 || xpcost1Value > 30) {
+      createAlertModal({
+        title: t("enchCrack.alert.title"),
+        content: t("enchCrack.alert.content_3", [1]),
+        hideOk: true,
+        cancelText: t("enchCrack.alert.closeText"),
+      });
+      return;
+    }
+
+    // 检查第二附魔等级是否在0~30之间
+    if (xpcost2Value < 0 || xpcost2Value > 30) {
+      createAlertModal({
+        title: t("enchCrack.alert.title"),
+        content: t("enchCrack.alert.content_3", [2]),
+        hideOk: true,
+        cancelText: t("enchCrack.alert.closeText"),
+      });
+      return;
+    }
+
+    // 检查第三附魔等级是否在0~30之间
+    if (xpcost3Value < 0 || xpcost3Value > 30) {
+      createAlertModal({
+        title: t("enchCrack.alert.title"),
+        content: t("enchCrack.alert.content_3", [3]),
+        hideOk: true,
+        cancelText: t("enchCrack.alert.closeText"),
+      });
+      return;
+    }
+  };
 </script>
 
 <template>
@@ -36,6 +109,7 @@
         type="text"
         maxlength="2"
         :title="t('enchCrack.bookshelves_tooltip')"
+        v-model="bookshelves"
       />
     </div>
     <div class="level_wrapper level_wrapper_1">
@@ -43,6 +117,7 @@
         type="text"
         maxlength="2"
         :title="t('enchCrack.xpCost1_tooltip')"
+        v-model="xpcost1"
       />
     </div>
     <div class="level_wrapper level_wrapper_2">
@@ -50,6 +125,7 @@
         type="text"
         maxlength="2"
         :title="t('enchCrack.xpCost2_tooltip')"
+        v-model="xpcost2"
       />
     </div>
     <div class="level_wrapper level_wrapper_3">
@@ -57,11 +133,15 @@
         type="text"
         maxlength="2"
         :title="t('enchCrack.xpCost3_tooltip')"
+        v-model="xpcost3"
       />
     </div>
-    <MCButton class="check-btn" :title="t('enchCrack.check_tooltip')">{{
-      t("enchCrack.check")
-    }}</MCButton>
+    <MCButton
+      class="check-btn"
+      :title="t('enchCrack.check_tooltip')"
+      @click="onCheckBtnClick"
+      >{{ t("enchCrack.check") }}</MCButton
+    >
     <MCButton class="reset-btn" :title="t('enchCrack.reset_tooltip')">{{
       t("enchCrack.reset")
     }}</MCButton>
