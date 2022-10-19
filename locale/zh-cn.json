@@ -1,0 +1,13 @@
+{
+    "locate": {
+        "en": "English",
+        "zh-cn": "简体中文"
+    },
+    "title": {
+        "main": "附魔破解器",
+        "unknown": "未知",
+        "cracker": "种子破解器",
+        "calculator": "附魔计算器",
+        "about": "关于"
+    }
+}
