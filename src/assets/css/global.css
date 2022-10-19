@@ -26,3 +26,9 @@ body {
   @apply bg-primary;
   color: #fff;
 }
+
+input {
+  @apply text-17px leading-0;
+  @apply border-1 border-primary border-opacity-60;
+  @apply font-extrabold;
+}
