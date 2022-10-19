@@ -18,8 +18,22 @@ app.use(router);
 import { createI18n } from 'vue-i18n'
 import messages from '@intlify/vite-plugin-vue-i18n/messages';
 
+// find the locale from the browser
+const findPrimaryLanguage = () => {
+    const languages = navigator.languages || [navigator.language]
+    const locales = Object.keys(messages)
+    for (const language of languages) {
+        for (const locale of locales) {
+            if (language.toLowerCase().startsWith(locale)) {
+                return locale
+            }
+        }
+    }
+    return 'en'
+}
+
 // 尝试从 localstorage或navigator.language中获取语言
-const lang = localStorage.getItem('lang') || navigator.language.toLowerCase();
+const lang = localStorage.getItem('lang') || findPrimaryLanguage();
 
 const i18n = createI18n({
     locale: lang,
