@@ -15,6 +15,10 @@
         "xpSeed1_tooltip": "所需的第一个XP种子",
         "xpSeed2": "XP种子 2",
         "xpSeed2_tooltip": "所需的第二个XP种子",
-        "calculate": "计算种子"
+        "calculate": "计算种子",
+        "bookshelves_tooltip": "附魔台周围的有效书架数量",
+        "xpCost1_tooltip": "第一个附魔所需的经验等级",
+        "xpCost2_tooltip": "第二个附魔所需的经验等级",
+        "xpCost3_tooltip": "第三个附魔所需的经验等级"
     }
 }

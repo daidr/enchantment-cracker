@@ -15,6 +15,10 @@
         "xpSeed1_tooltip": "The first consecutive XP seed",
         "xpSeed2": "XP Seed 2",
         "xpSeed2_tooltip": "The second consecutive XP seed",
-        "calculate": "Calculate Seed"
+        "calculate": "Calculate Seed",
+        "bookshelves_tooltip": "The number of bookshelves exposed to the enchanting table",
+        "xpCost1_tooltip": "The number on the right of the top slot",
+        "xpCost2_tooltip": "The number on the right of the middle slot",
+        "xpCost3_tooltip": "The number on the right of the bottom slot"
     }
 }
