@@ -23,7 +23,7 @@
     <template v-if="true">
       <router-view v-slot="{ Component }">
         <MCFrame class="main" :class="{ disabled: pageStore.isPageLoading }">
-          <p>
+          <p class="select-none font-bold text-lg">
             {{ t($route.meta.pageTitle || "title.unknown") }}
           </p>
           <component :is="Component" />
