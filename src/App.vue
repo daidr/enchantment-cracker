@@ -23,7 +23,7 @@
     <template v-if="true">
       <router-view v-slot="{ Component }">
         <MCFrame class="main" :class="{ disabled: pageStore.isPageLoading }">
-          <p class="select-none font-bold text-lg">
+          <p class="select-none font-bold text-16px leading-19px">
             {{ t($route.meta.pageTitle || "title.unknown") }}
           </p>
           <component :is="Component" />
@@ -51,6 +51,10 @@
 
       &.disabled {
         @apply pointer-events-none;
+      }
+
+      &:deep(.mcframe__main) {
+        @apply flex flex-col;
       }
     }
   }

@@ -3,19 +3,15 @@
   import { onMounted, ref } from "vue";
 
   const pageStore = usePageStore();
-
-  const uid = ref(-1);
-
-  onMounted(async () => {
-    // pageStore.setPageLoadingState(true)
-    // const _result = await callbackUid(123456)
-    // uid.value = _result.data.uid
-    // pageStore.setPageLoadingState(false)
-  });
 </script>
 
 <template>
-  <div>crack page</div>
+  <div class="wrapper"></div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  .wrapper {
+    @apply w-full h-full;
+    background-image: url(@/assets/images/pane1.png);
+  }
+</style>
