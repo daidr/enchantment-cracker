@@ -37,7 +37,7 @@
 
 <style scoped lang="scss">
   .lang-switch {
-    @apply fixed top-0 right-0 h-10 w-30;
+    @apply fixed top-0 right-0 h-10 w-30 mt-2 mr-2;
 
     select {
       @apply w-full h-full;
