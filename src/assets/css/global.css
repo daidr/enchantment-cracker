@@ -1,0 +1,24 @@
+html,
+body {
+  margin: 0;
+  font-family: PingFang SC, HarmonyOS_Regular, Helvetica Neue, Microsoft YaHei, sans-serif !important;
+  overflow-y: hidden;
+  @apply text-primary bg-primary-extralight;
+  overflow: hidden;
+}
+
+#app {
+  @apply h-100vh w-100vw;
+  @apply flex justify-center items-center;
+}
+
+* {
+  outline: none !important;
+  @apply box-border;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  @apply bg-primary;
+  color: #fff;
+}
