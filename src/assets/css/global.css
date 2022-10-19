@@ -1,10 +1,14 @@
 html,
 body {
   margin: 0;
-  font-family: PingFang SC, HarmonyOS_Regular, Helvetica Neue, Microsoft YaHei, sans-serif !important;
   overflow-y: hidden;
+  font-family: IPix, PingFang SC, HarmonyOS_Regular, Helvetica Neue, Microsoft YaHei, sans-serif !important;
   @apply text-primary bg-primary-extralight;
   overflow: hidden;
+}
+
+.font-nomc {
+  font-family: PingFang SC, HarmonyOS_Regular, Helvetica Neue, Microsoft YaHei, sans-serif !important;
 }
 
 #app {
