@@ -7,7 +7,7 @@ export default defineConfig({
         primary: {
           extralight: '#ffffff',
           light: '#c4c4c4',
-          DEFAULT: '#555555',
+          DEFAULT: '#333333',
         },
       },
     }
