@@ -15,7 +15,7 @@
 </script>
 
 <template>
-  <div>crack page</div>
+  <div>calc page</div>
 </template>
 
 <style scoped lang="scss"></style>
