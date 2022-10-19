@@ -9,5 +9,12 @@
         "cracker": "种子破解器",
         "calculator": "附魔计算器",
         "about": "关于"
+    },
+    "enchCrack": {
+        "xpSeed1": "XP种子 1",
+        "xpSeed1_tooltip": "所需的第一个XP种子",
+        "xpSeed2": "XP种子 2",
+        "xpSeed2_tooltip": "所需的第二个XP种子",
+        "calculate": "计算种子"
     }
 }

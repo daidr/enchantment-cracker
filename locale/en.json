@@ -9,5 +9,12 @@
         "cracker": "Enchantment Cracker",
         "calculator": "Enchantment Calculator",
         "about": "About"
+    },
+    "enchCrack": {
+        "xpSeed1": "XP Seed 1",
+        "xpSeed1_tooltip": "The first consecutive XP seed",
+        "xpSeed2": "XP Seed 2",
+        "xpSeed2_tooltip": "The second consecutive XP seed",
+        "calculate": "Calculate Seed"
     }
 }
