@@ -50,7 +50,7 @@
       @apply transition w-354px h-338px -mt-10px;
 
       &.disabled {
-        @apply pointer-events-none opacity-0;
+        @apply pointer-events-none;
       }
     }
   }
