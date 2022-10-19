@@ -1,23 +1,33 @@
 <script setup>
-import { usePageStore } from '@/store/page';
-import GlobalLoading from '@/components/GlobalLoading.vue';
-import MessageContainer from '@/components/Message/MessageContainer.vue';
+  import { usePageStore } from "@/store/page";
+  import GlobalLoading from "@/components/GlobalLoading.vue";
+  import MessageContainer from "@/components/Message/MessageContainer.vue";
+  import MainTabs from "./components/MainTabs.vue";
+  import MCFrame from "./components/MCFrame.vue";
+  import { useI18n } from "vue-i18n";
+  import Title from "./components/utils/Title.vue";
+  import LangSwitch from "./components/LangSwitch.vue";
 
-const pageStore = usePageStore()
+  const pageStore = usePageStore();
+
+  const { t } = useI18n();
 </script>
 
 <template>
   <div class="main-wrapper">
-    <div class="tabs tabs-active-1">
-      <div class="tabs__tab_1 tabs__tab"></div>
-      <div class="tabs__tab_2 tabs__tab"></div>
-      <div class="tabs__tab_3 tabs__tab"></div>
-    </div>
+    <Title :title="$route.meta.pageTitle" />
+    <MCFrame class="lang-switch">
+      <LangSwitch />
+    </MCFrame>
+    <MainTabs class="relative z-1" />
     <template v-if="true">
       <router-view v-slot="{ Component }">
-        <div class="main" :class="{disabled: pageStore.isPageLoading}">
+        <MCFrame class="main" :class="{ disabled: pageStore.isPageLoading }">
+          <p>
+            {{ t($route.meta.pageTitle || "title.unknown") }}
+          </p>
           <component :is="Component" />
-        </div>
+        </MCFrame>
       </router-view>
     </template>
   </div>
@@ -26,48 +36,22 @@ const pageStore = usePageStore()
 </template>
 
 <style scoped lang="scss">
-.main-wrapper {
-  @apply w-354px h-390px;
+  .lang-switch {
+    @apply fixed top-0 right-0 h-10 w-30;
 
-  .tabs {
-    @apply w-164px h-62px;
-    background-image: url(@/assets/images/tabs.png);
-
-    .tabs__tab {
-      @apply w-54px h-62px inline-block cursor-pointer;
+    select {
+      @apply w-full h-full;
     }
+  }
+  .main-wrapper {
+    @apply w-354px h-390px;
 
-    &.tabs-active-1 {
-      background-position: 0 0;
+    .main {
+      @apply transition w-354px h-338px -mt-10px;
 
-      .tabs__tab_1 {
-        @apply pointer-events-none;
-      }
-    }
-
-    &.tabs-active-2 {
-      background-position: 0 -62px;
-
-      .tabs__tab_2 {
-        @apply pointer-events-none;
-      }
-    }
-
-    &.tabs-active-3 {
-      background-position: 0 -124px;
-
-      .tabs__tab_3 {
-        @apply pointer-events-none;
+      &.disabled {
+        @apply pointer-events-none opacity-0;
       }
     }
   }
-
-  .main {
-    @apply transition h-full;
-
-    &.disabled {
-      @apply pointer-events-none opacity-0;
-    }
-  }
-}
 </style>

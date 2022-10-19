@@ -25,6 +25,7 @@ const i18n = createI18n({
     locale: lang,
     fallbackLocale: 'en',
     messages,
+    legacy: false,
 });
 
 app.use(i18n);

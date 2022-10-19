@@ -43,9 +43,6 @@ const togglePageLoadingState = (() => {
 
 
 router.afterEach((to, from, failure) => {
-  if (!failure) {
-    window.document.title = `${to.meta.pageTitle} | DouTemplate` || 'DouTemplate'
-  }
   if (!to.meta.asyncLoading) {
     togglePageLoadingState(0)
   } else {
