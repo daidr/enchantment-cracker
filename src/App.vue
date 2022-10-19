@@ -26,7 +26,9 @@
           <p class="select-none font-bold text-16px leading-20px">
             {{ t($route.meta.pageTitle || "title.unknown") }}
           </p>
-          <component :is="Component" />
+          <KeepAlive>
+            <component :is="Component" />
+          </KeepAlive>
         </MCFrame>
       </router-view>
     </template>
