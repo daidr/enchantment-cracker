@@ -6,8 +6,8 @@
     "title": {
         "main": "EnchantmentCracker",
         "unknown": "Unknown",
-        "cracker": "Cracker",
-        "calculator": "Calculator",
+        "cracker": "Enchantment Cracker",
+        "calculator": "Enchantment Calculator",
         "about": "About"
     }
 }
