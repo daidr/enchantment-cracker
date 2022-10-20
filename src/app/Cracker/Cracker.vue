@@ -173,13 +173,13 @@
     }
 
     .calc-btn {
-      @apply absolute top-82px w-150px;
+      @apply absolute top-82px w-153px;
     }
 
     .totalseed_wrapper {
       @apply absolute top-109px left-0;
       input {
-        @apply w-150px;
+        @apply w-153px;
       }
     }
 
