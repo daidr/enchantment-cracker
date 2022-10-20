@@ -8,7 +8,7 @@
 </script>
 
 <template>
-  <div class="mcbutton" :class="{ disabled }">
+  <div class="mcbutton" :class="{ disabled }" ontouchstart="">
     <div class="mcbutton__tl mcbutton__border"></div>
     <div class="mcbutton__t mcbutton__border"></div>
     <div class="mcbutton__tr mcbutton__border"></div>
