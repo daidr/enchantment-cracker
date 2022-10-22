@@ -1,0 +1,16 @@
+name = "rsw"
+version = "0.1.0"
+
+interval = 50
+
+cli = "pnpm"
+
+
+[new]
+using = "wasm-pack"
+
+#! ################# NPM Package #################
+
+[[crates]]
+name = "@rsw/rng-worker"
+link = true
