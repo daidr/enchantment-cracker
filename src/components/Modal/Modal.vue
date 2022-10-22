@@ -3,6 +3,7 @@
   import LoadingIcon from "../LoadingIcon.vue";
   import MCFrame from "../MCFrame.vue";
   import MCButton from "../MCButton.vue";
+  import { setThemeColor, setThemeColorToDefault } from "@/utils/_";
 
   const props = defineProps({
     /**
@@ -166,9 +167,16 @@
     }
   };
 
+  if (props.mask) {
+    setThemeColor("#ccc");
+  }
+
   const handleClose = () => {
     if (!_visible.value) {
       emit("close");
+      if (props.mask) {
+        setThemeColorToDefault();
+      }
     }
   };
 
