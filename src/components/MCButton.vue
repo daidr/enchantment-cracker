@@ -121,7 +121,7 @@
       }
 
       .mcbutton__main {
-        @apply bg-[#a8a8a8];
+        @apply bg-[#555555] text-white;
       }
     }
   }
