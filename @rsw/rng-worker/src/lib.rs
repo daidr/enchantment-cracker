@@ -30,13 +30,6 @@ extern "C" {
     fn AtomicsBigIntStore(typed_array: &JsValue, index: u32, value: i64) -> Result<i64, JsValue>;
 }
 
-// #[wasm_bindgen]
-// pub fn rand_test() {
-//     let mut random = SimpleRandom::new();
-//     random.set_seed(2521490391);
-//     for _ in 0..2147483647 {}
-// }
-
 #[wasm_bindgen]
 pub fn first_input(
     booksheleves: i32,
@@ -48,7 +41,7 @@ pub fn first_input(
     seed_searched_buf: js_sys::SharedArrayBuffer,
     abort_requested_buf: js_sys::SharedArrayBuffer,
 ) -> u64 {
-    utils::set_panic_hook();
+    //utils::set_panic_hook();
     let block_size: i32 = 2147483647 / 20 / core_count - 1;
     let seed: js_sys::Int32Array = js_sys::Int32Array::new(&seed_buf);
     let seed_searched: js_sys::BigInt64Array = js_sys::BigInt64Array::new(&seed_searched_buf);
@@ -62,8 +55,7 @@ pub fn first_input(
     let second_early: i32 = slot2 * 3 / 2;
     let second_sub_one: i32 = slot2 - 1;
 
-    // create a list with 1000000 i32
-    let mut my_list: [i32; 100000] = [0; 100000];
+    let mut my_list: [i32; 10000] = [0; 10000];
     let mut pos: u32 = 0;
     let mut my_rng = simple_random::SimpleRandom::new();
     let mut count: u64 = 0;
@@ -76,7 +68,6 @@ pub fn first_input(
 
         let cur_seed = js_sys::Atomics::load(&seed, 0).unwrap();
         let last = cur_seed.wrapping_add(block_size);
-        // log(&format!("cur_seed: {}, last: {}", cur_seed, last));
         if last < cur_seed {
             break; // overflow
         }
@@ -117,11 +108,9 @@ pub fn first_input(
                 my_list[pos as usize] = i;
                 pos += 1;
 
-                if pos == 100000 {
-                    // js_sys::Atomics::Add(&seed_searched, 0, temp).unwrap();
+                if pos == 10000 {
                     AtomicsBigIntStore(&seed_searched, 0, i as i64 + 2147483648).unwrap();
-                    // seed_searched.set_index(0, seed_searched.at(0).unwrap() + 10000);
-                    count += 100000;
+                    count += 10000;
                     pos = 0;
                 }
             }
@@ -129,6 +118,5 @@ pub fn first_input(
     }
     count += pos as u64;
     // AtomicsBigIntAdd(&seed_searched, 0, pos as i64).unwrap();
-    // seed_searched.set_index(0, seed_searched.at(0).unwrap() + pos as i64);
     return count;
 }
