@@ -25,5 +25,8 @@ export default defineConfig({
       'Cross-Origin-Embedder-Policy': 'require-corp',
     },
     port: 80
+  },
+  build: {
+    target: 'es2020',
   }
 })
