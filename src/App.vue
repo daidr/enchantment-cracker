@@ -2,23 +2,125 @@
   import { usePageStore } from "@/store/page";
   import GlobalLoading from "@/components/GlobalLoading.vue";
   import MessageContainer from "@/components/Message/MessageContainer.vue";
-  import MainTabs from "./components/MainTabs.vue";
-  import MCFrame from "./components/MCFrame.vue";
+  import MainTabs from "@/components/MainTabs.vue";
+  import MCFrame from "@/components/MCFrame.vue";
   import { useI18n } from "vue-i18n";
-  import Title from "./components/utils/Title.vue";
-  import LangSwitch from "./components/LangSwitch.vue";
+  import Title from "@/components/utils/Title.vue";
+  import LangSwitch from "@/components/LangSwitch.vue";
+  import { provide, ref } from "vue";
+  import RNGWorker from "@/worker/rng-worker?worker";
 
   const pageStore = usePageStore();
 
   const { t } = useI18n();
+
+  const cores = ref(
+    (navigator.hardwareConcurrency > 32 ? 32 : navigator.hardwareConcurrency) -
+      1
+  );
+
+  const workerPool = [];
+
+  // init worker pool
+  for (let i = 0; i < cores.value; i++) {
+    const worker = new RNGWorker();
+    worker.addEventListener("message", (e) => {
+      workerHandler(e.data);
+    });
+    worker.postMessage({
+      type: "initEnv",
+      payload: { coreCount: cores.value, coreIndex: i },
+    });
+    workerPool.push(worker);
+  }
+
+  // seed searched
+  const seedSearchedSharedBuf = new SharedArrayBuffer(8);
+  // abort requested
+  const abortRequestedSharedBuf = new SharedArrayBuffer(1);
+
+  const timer = -1;
+  let isProgressing = false;
+
+  const firstInput = (bookshelves, slot1, slot2, slot3, progressHandler) => {
+    // seed
+    const seedSharedBuf = new SharedArrayBuffer(4);
+    console.log("seedSharedBuf", seedSharedBuf);
+    console.log("seedSearchedSharedBuf", seedSearchedSharedBuf);
+    console.log("abortRequestedSharedBuf", abortRequestedSharedBuf);
+
+    Atomics.store(new Int32Array(seedSharedBuf), 0, -2147483648);
+    Atomics.store(new BigInt64Array(seedSearchedSharedBuf), 0, 0n);
+    Atomics.store(new Int8Array(abortRequestedSharedBuf), 0, 0);
+
+    clearInterval(timer);
+    isProgressing = true;
+    const seedSearchedDataView = new BigInt64Array(seedSearchedSharedBuf);
+    setInterval(() => {
+      if (isProgressing) {
+        progressHandler(
+          (Number(Atomics.load(seedSearchedDataView, 0)) / 4294967296) * 100,
+          true
+        );
+      } else {
+        // progressHandler((seedSearchedDataView[0] / 4294967296n) * 100n,true);
+        clearInterval(timer);
+      }
+    }, 200);
+
+    // dispatch event to workers
+    workerPool.forEach((worker) => {
+      worker.postMessage({
+        type: "firstInput",
+        payload: {
+          bookshelves,
+          slot1,
+          slot2,
+          slot3,
+          seedSharedBuf,
+          seedSearchedSharedBuf,
+          abortRequestedSharedBuf,
+        },
+      });
+    });
+  };
+
+  const abort = () => {
+    // TODO
+    Atomics.store(new Int8Array(abortRequestedSharedBuf), 0, 1);
+  };
+
+  provide("firstInput", firstInput);
+  provide("abort", abort);
+
+  let core = 0;
+
+  const calc = () => {
+    core++;
+    if (core === cores.value) {
+      isProgressing = false;
+    }
+  };
+
+  const workerHandler = ({ type, payload }) => {
+    switch (type) {
+      case "firstInputDone":
+        calc(payload);
+        break;
+    }
+  };
 </script>
 
 <template>
   <div class="main-wrapper">
     <Title :title="$route.meta.pageTitle" />
-    <MCFrame class="lang-switch">
-      <LangSwitch />
-    </MCFrame>
+    <div class="toolbar">
+      <MCFrame> {{ t("global.core_count") }}{{ cores }} </MCFrame>
+      <MCFrame class="lang-switch">
+        <LangSwitch />
+      </MCFrame>
+    </div>
+
     <MainTabs class="relative z-1" />
     <template v-if="true">
       <router-view v-slot="{ Component }">
@@ -38,13 +140,16 @@
 </template>
 
 <style scoped lang="scss">
-  .lang-switch {
-    @apply fixed top-0 right-0 mt-2 mr-2;
-
-    select {
-      @apply w-full h-full;
+  .toolbar {
+    @apply select-none;
+    @apply fixed top-0 right-0 mt-2 mr-2 flex gap-x-2;
+    .lang-switch {
+      select {
+        @apply w-full h-full;
+      }
     }
   }
+
   .main-wrapper {
     @apply w-354px h-390px;
 

@@ -1,13 +1,17 @@
 <script setup>
   import { createAlertModal } from "@/components/Modal";
   import { usePageStore } from "@/store/page";
-  import { onMounted, ref } from "vue";
+  import { inject, onMounted, ref } from "vue";
   import { useI18n } from "vue-i18n";
   import MCButton from "../../components/MCButton.vue";
+  import MCProgressButton from "@/components/MCProgressButton.vue";
 
   const { t } = useI18n();
 
   const pageStore = usePageStore();
+
+  const firstInput = inject("firstInput");
+  const abort = inject("abort");
 
   const bookshelves = ref("");
   const xpcost1 = ref("");
@@ -79,6 +83,28 @@
       });
       return;
     }
+
+    firstInput(
+      bookshelves.value,
+      xpcost1.value,
+      xpcost2.value,
+      xpcost3.value,
+      firstInputProgressHandler
+    );
+  };
+
+  const onAbortBtnClick = () => {
+    abort();
+  };
+
+  const calcProgress = ref(-1);
+
+  const firstInputProgressHandler = (progress, isProgressing) => {
+    if (isProgressing) {
+      calcProgress.value = progress;
+    } else {
+      calcProgress.value = -1;
+    }
   };
 </script>
 
@@ -136,15 +162,26 @@
         v-model="xpcost3"
       />
     </div>
-    <MCButton
+    <MCProgressButton
       class="check-btn"
       :title="t('enchCrack.check_tooltip')"
+      :progress="calcProgress"
+      :progress-mode="calcProgress != -1"
       @click="onCheckBtnClick"
-      >{{ t("enchCrack.check") }}</MCButton
     >
-    <MCButton class="reset-btn" :title="t('enchCrack.reset_tooltip')">{{
-      t("enchCrack.reset")
-    }}</MCButton>
+      <template v-if="calcProgress == -1">
+        {{ t("enchCrack.check") }}
+      </template>
+      <template v-else>
+        {{ t("enchCrack.progress", [calcProgress.toFixed(2)]) }}
+      </template>
+    </MCProgressButton>
+    <MCButton
+      class="reset-btn"
+      :title="t('enchCrack.reset_tooltip')"
+      @click="onAbortBtnClick"
+      >{{ t("enchCrack.reset") }}</MCButton
+    >
   </div>
 </template>
 
