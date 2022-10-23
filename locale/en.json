@@ -30,7 +30,7 @@
     "remaining_thousand": "Possible seeds: {0}k",
     "remaining_million": "Possible seeds: {0}M",
     "remaining_billion": "Possible seeds: {0}B",
-    "progress": "Progress: {0}%",
+    "progress": "Progress: {0} %",
     "alert": {
       "title": "ERROR",
       "content_1": "Add info failed, fields had invalid numbers",
@@ -38,5 +38,8 @@
       "content_2": "Add info failed, bookshelf count invalid",
       "content_3": "Add info failed, slot {0} count invalid"
     }
+  },
+  "global": {
+    "core_count": "Cores: "
   }
 }

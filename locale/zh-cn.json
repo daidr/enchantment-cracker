@@ -30,7 +30,7 @@
     "remaining_thousand": "可能的种子数: {0}千个",
     "remaining_million": "可能的种子数: {0}百万个",
     "remaining_billion": "可能的种子数: {0}十亿个",
-    "progress": "进度: {0}%",
+    "progress": "进度: {0} %",
     "alert": {
       "title": "错误",
       "content_1": "无法添加数据，输入框中的数据不合法",
@@ -38,5 +38,8 @@
       "content_2": "无法添加数据，书架数量不合法",
       "content_3": "无法添加数据，第 {0} 个附魔等级超出范围"
     }
+  },
+  "global": {
+    "core_count": "核心数："
   }
 }
