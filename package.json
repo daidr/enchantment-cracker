@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "rsw build && vite build",
+    "build:vercel": "/vercel/.cargo/bin/rsw build && vite build",
     "rsw": "rsw",
     "preview": "vite preview"
   },
