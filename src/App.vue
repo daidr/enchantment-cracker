@@ -35,8 +35,6 @@
     workerPool.push(worker);
   }
 
-  // seed searched
-  const seedSearchedSharedBuf = new SharedArrayBuffer(8);
   // abort requested
   const abortRequestedSharedBuf = new SharedArrayBuffer(1);
 
