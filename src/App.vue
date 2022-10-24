@@ -7,15 +7,16 @@
   import { useI18n } from "vue-i18n";
   import Title from "@/components/utils/Title.vue";
   import LangSwitch from "@/components/LangSwitch.vue";
-  import { provide, ref } from "vue";
+  import { onMounted, provide, ref } from "vue";
   import RNGWorker from "@/worker/rng-worker?worker";
+  import init, { get_last_few_seeds } from "@rsw/rng-worker";
 
   const pageStore = usePageStore();
 
   const { t } = useI18n();
 
   const cores = ref(
-    (navigator.hardwareConcurrency > 32 ? 32 : navigator.hardwareConcurrency) -
+    (navigator.hardwareConcurrency > 12 ? 12 : navigator.hardwareConcurrency) -
       1
   );
 
@@ -46,20 +47,19 @@
     // seed
     const seedSharedBuf = new SharedArrayBuffer(4);
     console.log("seedSharedBuf", seedSharedBuf);
-    console.log("seedSearchedSharedBuf", seedSearchedSharedBuf);
     console.log("abortRequestedSharedBuf", abortRequestedSharedBuf);
 
     Atomics.store(new Int32Array(seedSharedBuf), 0, -2147483648);
-    Atomics.store(new BigInt64Array(seedSearchedSharedBuf), 0, 0n);
     Atomics.store(new Int8Array(abortRequestedSharedBuf), 0, 0);
 
     clearInterval(timer);
     isProgressing = true;
-    const seedSearchedDataView = new BigInt64Array(seedSearchedSharedBuf);
+    const seedSharedDataView = new Int32Array(seedSharedBuf);
     setInterval(() => {
       if (isProgressing) {
         progressHandler(
-          (Number(Atomics.load(seedSearchedDataView, 0)) / 4294967296) * 100,
+          ((Atomics.load(seedSharedDataView, 0) + 2147483648) / 4294967296) *
+            100,
           true
         );
       } else {
@@ -78,7 +78,6 @@
           slot2,
           slot3,
           seedSharedBuf,
-          seedSearchedSharedBuf,
           abortRequestedSharedBuf,
         },
       });
@@ -94,21 +93,45 @@
   provide("abort", abort);
 
   let core = 0;
+  let firstInputCount = 0;
 
-  const calc = () => {
+  const firstInputDoneHandler = ({
+    count,
+    inputData: { bookshelves, slot1, slot2, slot3, seedSharedBuf },
+  }) => {
     core++;
+    firstInputCount += count;
     if (core === cores.value) {
       isProgressing = false;
+      console.log("count", firstInputCount);
+      // 还有一部分种子剩余，没有验证
+      {
+        // find seed not be validated
+        const seedSharedDataView = new Int32Array(seedSharedBuf);
+        const seed = Atomics.load(seedSharedDataView, 0);
+        const lastFew = get_last_few_seeds(
+          seed,
+          bookshelves,
+          slot1,
+          slot2,
+          slot3
+        );
+        console.log("totalCount", firstInputCount + lastFew.length);
+      }
     }
   };
 
   const workerHandler = ({ type, payload }) => {
     switch (type) {
       case "firstInputDone":
-        calc(payload);
+        firstInputDoneHandler(payload);
         break;
     }
   };
+
+  onMounted(() => {
+    init();
+  });
 </script>
 
 <template>

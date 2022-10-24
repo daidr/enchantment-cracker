@@ -7,9 +7,9 @@ use wasm_bindgen::prelude::*;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
-#[cfg(feature = "wee_alloc")]
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+// #[cfg(feature = "wee_alloc")]
+// #[global_allocator]
+// static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
 extern "C" {
@@ -38,13 +38,11 @@ pub fn first_input(
     slot3: i32,
     core_count: i32,
     seed_buf: js_sys::SharedArrayBuffer,
-    seed_searched_buf: js_sys::SharedArrayBuffer,
     abort_requested_buf: js_sys::SharedArrayBuffer,
-) -> u64 {
+) -> i32 {
     //utils::set_panic_hook();
     let block_size: i32 = 2147483647 / 20 / core_count - 1;
     let seed: js_sys::Int32Array = js_sys::Int32Array::new(&seed_buf);
-    let seed_searched: js_sys::BigInt64Array = js_sys::BigInt64Array::new(&seed_searched_buf);
     let abort_requested: js_sys::Int8Array = js_sys::Int8Array::new(&abort_requested_buf);
 
     let two_shelves: i32 = booksheleves * 2;
@@ -55,10 +53,12 @@ pub fn first_input(
     let second_early: i32 = slot2 * 3 / 2;
     let second_sub_one: i32 = slot2 - 1;
 
-    let mut my_list: [i32; 10000] = [0; 10000];
+    let mut my_list: [i32; 100000] = [0; 100000];
     let mut pos: u32 = 0;
     let mut my_rng = simple_random::SimpleRandom::new();
-    let mut count: u64 = 0;
+
+    // create a vector to store possible seeds
+    let mut possible_seeds: Vec<i32> = Vec::new();
 
     loop {
         if js_sys::Atomics::load(&abort_requested, 0).unwrap() == 1 {
@@ -108,15 +108,64 @@ pub fn first_input(
                 my_list[pos as usize] = i;
                 pos += 1;
 
-                if pos == 10000 {
-                    AtomicsBigIntStore(&seed_searched, 0, i as i64 + 2147483648).unwrap();
-                    count += 10000;
+                if pos == 100000 {
+                    // store possible seeds
+                    for seed in my_list.iter() {
+                        possible_seeds.push(*seed);
+                    }
                     pos = 0;
                 }
             }
         }
     }
-    count += pos as u64;
-    // AtomicsBigIntAdd(&seed_searched, 0, pos as i64).unwrap();
-    return count;
+    // store possible seeds before pos
+    for seed in my_list.iter().take(pos as usize) {
+        possible_seeds.push(*seed);
+    }
+
+    return possible_seeds.len() as i32;
+}
+
+fn get_generic_enchantability(rand: &mut simple_random::SimpleRandom, booksheleves: &i32) -> i32 {
+    let first = rand.next_int(8);
+    let second = rand.next_int(booksheleves + 1);
+    return first + 1 + (booksheleves >> 1) + second;
+}
+
+fn get_levels_slot1(rand: &mut simple_random::SimpleRandom, booksheleves: &i32) -> i32 {
+    let enchantability = get_generic_enchantability(rand, booksheleves) / 3;
+    return cmp::max(enchantability, 1);
+}
+
+fn get_levels_slot2(rand: &mut simple_random::SimpleRandom, booksheleves: &i32) -> i32 {
+    return get_generic_enchantability(rand, booksheleves) * 2 / 3 + 1;
+}
+
+fn get_levels_slot3(rand: &mut simple_random::SimpleRandom, booksheleves: &i32) -> i32 {
+    let enchantability = get_generic_enchantability(rand, booksheleves);
+    let twice_booksheleves = booksheleves * 2;
+    return cmp::max(enchantability, twice_booksheleves);
+}
+
+#[wasm_bindgen]
+pub fn get_last_few_seeds(
+    start_seed: i32,
+    booksheleves: i32,
+    slot1: i32,
+    slot2: i32,
+    slot3: i32,
+) -> js_sys::Array {
+    let array = js_sys::Array::new();
+    let mut my_rng = simple_random::SimpleRandom::new();
+    for i in (start_seed - 1)..2147483647 {
+        my_rng.set_seed((i + 1).into());
+        if get_levels_slot1(&mut my_rng, &booksheleves) == slot1 {
+            if get_levels_slot2(&mut my_rng, &booksheleves) == slot2 {
+                if get_levels_slot3(&mut my_rng, &booksheleves) == slot3 {
+                    array.push(&JsValue::from(i + 1));
+                }
+            }
+        }
+    }
+    return array;
 }
