@@ -30,6 +30,9 @@ extern "C" {
     fn AtomicsBigIntStore(typed_array: &JsValue, index: u32, value: i64) -> Result<i64, JsValue>;
 }
 
+// create a vector to store possible seeds
+static mut POSSIBLE_SEEDS: Vec<i32> = Vec::new();
+
 #[wasm_bindgen]
 pub fn first_input(
     booksheleves: i32,
@@ -56,9 +59,6 @@ pub fn first_input(
     let mut my_list: [i32; 100000] = [0; 100000];
     let mut pos: u32 = 0;
     let mut my_rng = simple_random::SimpleRandom::new();
-
-    // create a vector to store possible seeds
-    let mut possible_seeds: Vec<i32> = Vec::new();
 
     loop {
         if js_sys::Atomics::load(&abort_requested, 0).unwrap() == 1 {
@@ -110,8 +110,8 @@ pub fn first_input(
 
                 if pos == 100000 {
                     // store possible seeds
-                    for seed in my_list.iter() {
-                        possible_seeds.push(*seed);
+                    unsafe {
+                        POSSIBLE_SEEDS.append(&mut my_list.to_vec());
                     }
                     pos = 0;
                 }
@@ -119,11 +119,10 @@ pub fn first_input(
         }
     }
     // store possible seeds before pos
-    for seed in my_list.iter().take(pos as usize) {
-        possible_seeds.push(*seed);
+    unsafe {
+        POSSIBLE_SEEDS.append(&mut my_list[0..pos as usize].to_vec());
+        return POSSIBLE_SEEDS.len() as i32;
     }
-
-    return possible_seeds.len() as i32;
 }
 
 fn get_generic_enchantability(rand: &mut simple_random::SimpleRandom, booksheleves: &i32) -> i32 {
