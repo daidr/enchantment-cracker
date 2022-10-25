@@ -41,5 +41,11 @@
   },
   "global": {
     "core_count": "Cores: "
+  },
+  "rngCracker": {
+    "message": {
+      "abort": "Operation canceled",
+      "finished": "Operation done"
+    }
   }
 }

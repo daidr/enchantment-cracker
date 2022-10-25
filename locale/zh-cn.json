@@ -41,5 +41,11 @@
   },
   "global": {
     "core_count": "核心数："
+  },
+  "rngCracker": {
+    "message": {
+      "abort": "操作已取消",
+      "finished": "操作已完成"
+    }
   }
 }
