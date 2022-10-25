@@ -32,12 +32,21 @@ self.addEventListener('message', (e) => {
 
 function firstInput({ bookshelves, slot1, slot2, slot3, seedSharedBuf, abortRequestedSharedBuf }) {
     let time = performance.now();
-    let a = first_input(Number(bookshelves), Number(slot1), Number(slot2), Number(slot3), Number(CORE_COUNT), seedSharedBuf, abortRequestedSharedBuf)
+    let ret = first_input(Number(bookshelves), Number(slot1), Number(slot2), Number(slot3), Number(CORE_COUNT), seedSharedBuf, abortRequestedSharedBuf)
     console.log(`firstInput took ${performance.now() - time}ms`);
+    if (ret == -1) {
+        // abort
+        self.postMessage({
+            type: 'firstInputAbort',
+            payload: {}
+        });
+
+        return;
+    }
     self.postMessage({
         type: 'firstInputDone',
         payload: {
-            count: a,
+            count: ret,
             inputData: {
                 bookshelves,
                 slot1,

@@ -63,7 +63,8 @@ pub fn first_input(
     loop {
         if js_sys::Atomics::load(&abort_requested, 0).unwrap() == 1 {
             log("abort requested");
-            break;
+            // -1 means abort requested
+            return -1;
         }
 
         let cur_seed = js_sys::Atomics::load(&seed, 0).unwrap();

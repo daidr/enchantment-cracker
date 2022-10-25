@@ -10,8 +10,11 @@
   import { onMounted, provide, ref } from "vue";
   import RNGWorker from "@/worker/rng-worker?worker";
   import init, { get_last_few_seeds } from "@rsw/rng-worker";
+  import { useMessage } from "./components/Message";
 
   const pageStore = usePageStore();
+
+  const { info } = useMessage();
 
   const { t } = useI18n();
 
@@ -23,17 +26,28 @@
   const workerPool = [];
 
   // init worker pool
-  for (let i = 0; i < cores.value; i++) {
-    const worker = new RNGWorker();
-    worker.addEventListener("message", (e) => {
-      workerHandler(e.data);
+  const initWorkerPool = () => {
+    // remove old workers
+    workerPool.forEach((worker) => {
+      worker.terminate();
     });
-    worker.postMessage({
-      type: "initEnv",
-      payload: { coreCount: cores.value, coreIndex: i },
-    });
-    workerPool.push(worker);
-  }
+    workerPool.length = 0;
+
+    // init worker
+    for (let i = 0; i < cores.value; i++) {
+      const worker = new RNGWorker();
+      worker.addEventListener("message", (e) => {
+        workerHandler(e.data);
+      });
+      worker.postMessage({
+        type: "initEnv",
+        payload: { coreCount: cores.value, coreIndex: i },
+      });
+      workerPool.push(worker);
+    }
+  };
+
+  initWorkerPool();
 
   // abort requested
   const abortRequestedSharedBuf = new SharedArrayBuffer(1);
@@ -90,19 +104,18 @@
   provide("firstInput", firstInput);
   provide("abort", abort);
 
-  let core = 0;
-  let firstInputCount = 0;
+  let core_FirstInputDone = 0;
+  let count_FirstInputDone = 0;
 
   const firstInputDoneHandler = ({
     count,
     inputData: { bookshelves, slot1, slot2, slot3, seedSharedBuf },
   }) => {
-    core++;
-    firstInputCount += count;
-    if (core === cores.value) {
+    core_FirstInputDone++;
+    count_FirstInputDone += count;
+    if (core_FirstInputDone === cores.value) {
       isProgressing = false;
-      console.log("count", firstInputCount);
-      // 还有一部分种子剩余，没有验证
+      console.log("count", count_FirstInputDone);
       {
         // find seed not be validated
         const seedSharedDataView = new Int32Array(seedSharedBuf);
@@ -114,8 +127,26 @@
           slot2,
           slot3
         );
-        console.log("totalCount", firstInputCount + lastFew.length);
+        console.log("totalCount", count_FirstInputDone + lastFew.length);
+        info(t("rngCracker.message.finished"));
       }
+
+      core_FirstInputDone = 0;
+      count_FirstInputDone = 0;
+    }
+  };
+
+  let core_FirstInputAbort = 0;
+  const firstInputAbortHandler = () => {
+    core_FirstInputAbort++;
+    console.log(core_FirstInputAbort);
+    if (core_FirstInputAbort === cores.value) {
+      isProgressing = false;
+      core_FirstInputAbort = 0;
+      info(t("rngCracker.message.abort"));
+
+      // 顺便终止worker并重新创建
+      initWorkerPool();
     }
   };
 
@@ -123,6 +154,9 @@
     switch (type) {
       case "firstInputDone":
         firstInputDoneHandler(payload);
+        break;
+      case "firstInputAbort":
+        firstInputAbortHandler(payload);
         break;
     }
   };
