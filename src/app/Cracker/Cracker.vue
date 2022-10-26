@@ -137,7 +137,6 @@
     isProgressing,
     _totalCount = 0
   ) => {
-    console.log(progress, isProgressing, _totalCount);
     if (isProgressing) {
       calcProgress.value = progress;
     } else {
