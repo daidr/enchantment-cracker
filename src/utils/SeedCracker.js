@@ -1,18 +1,17 @@
 import { useMessage } from "@/components/Message";
 import RNGWorker from "@/worker/rng-worker?worker";
 import init, { get_last_few_seeds as getLastFewSeeds } from "@rsw/rng-worker";
-import { useI18n } from "vue-i18n";
+import { ENV_DEBUG } from "./env";
 
 const { info } = useMessage();
-const { t } = useI18n();
 
 export class SeedCracker {
-    // debug state
-    _DEBUG = true;
     // thread number: the count of threads, can be set via constructor
     _ThreadCount = 1;
     // the instance of workers
     _WorkerPoolList = [];
+
+    t = () => { }
 
     _IsFirstTime = true;
 
@@ -35,8 +34,9 @@ export class SeedCracker {
 
     /** firstInput Global states END */
 
-    constructor({ threadCount = 2 }) {
+    constructor({ threadCount = 2, i18n: t }) {
         this._ThreadCount = threadCount;
+        this.t = t;
         init();
     }
 
@@ -82,14 +82,14 @@ export class SeedCracker {
                 // call initEnv function in workers
                 worker.postMessage({
                     type: "initEnv",
-                    payload: { threadCount, threadIndex: i },
+                    payload: { threadCount: this._ThreadCount, threadIndex: i },
                 });
 
                 // add to worker pool
-                workerPool.push(worker);
+                this._WorkerPoolList.push(worker);
             }
         } catch (error) {
-            if (this._DEBUG) console.log(error)
+            if (ENV_DEBUG) console.log(error)
             return false;
         }
         return true;
@@ -101,7 +101,7 @@ export class SeedCracker {
         // NOTE: if we want to write a value to the shared buffer, we should use Atomics.store
         const seedSharedBuf = new SharedArrayBuffer(4);
 
-        if (this._DEBUG) console.log("firstInput: ", bookshelves, slot1, slot2, slot3);
+        if (ENV_DEBUG) console.log("firstInput: ", bookshelves, slot1, slot2, slot3);
 
         // init seedSharedBuf
         Atomics.store(new Int32Array(seedSharedBuf), 0, -2147483648);
@@ -156,7 +156,7 @@ export class SeedCracker {
         if (_FirstInputDoneThreadsCount === this._ThreadCount) {
             this._FirstInputIsProsessing = false;
 
-            if (this._DEBUG) console.log("firstInputDone(before): ", this._FirstInputDoneSeedsCount);
+            if (ENV_DEBUG) console.log("firstInputDone(before): ", this._FirstInputDoneSeedsCount);
 
             {
                 // find seed not be validated
@@ -172,7 +172,7 @@ export class SeedCracker {
 
                 const totalCount = this._FirstInputDoneSeedsCount + this._LastFewSeedsList.length;
 
-                if (this._DEBUG) console.log("firstInputDone(after): ", totalCount);
+                if (ENV_DEBUG) console.log("firstInputDone(after): ", totalCount);
 
                 info(t("rngCracker.message.finished"));
             }
