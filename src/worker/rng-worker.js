@@ -22,7 +22,7 @@ self.addEventListener('message', (e) => {
 
 function firstInput({ bookshelves, slot1, slot2, slot3, seedSharedBuf }) {
     let time = performance.now();
-    let ret = first_input(Number(bookshelves), Number(slot1), Number(slot2), Number(slot3), Number(THREAD_COUNT), seedSharedBuf, abortRequestedSharedBuf)
+    let ret = first_input(Number(bookshelves), Number(slot1), Number(slot2), Number(slot3), Number(THREAD_COUNT), seedSharedBuf)
     console.log(`firstInput took ${performance.now() - time}ms`);
 
     self.postMessage({
