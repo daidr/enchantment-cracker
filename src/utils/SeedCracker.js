@@ -31,6 +31,7 @@ export class SeedCracker {
     _FirstInputIsProsessing = false;
     _FirstInputDoneThreadsCount = 0;
     _FirstInputDoneSeedsCount = 0;
+    _FirstInputProsessCallback = () => { };
 
     /** firstInput Global states END */
 
@@ -56,13 +57,10 @@ export class SeedCracker {
         // set AbortRequestSharedBuffer to 0
         // new Int8Array(this.AbortRequestSharedBuffer)[0] = 0;
 
-        this._IsFirstTime = true;
-        this._FirstInputDoneThreadsCount = 0;
-        this._FirstInputDoneSeedsCount = 0;
-        this._FirstInputTimerId = -1;
-        this._FirstInputIsProsessing = false;
+        clearInterval(this._FirstInputTimerId);
+        this._FirstInputProsessCallback(-2, false);
 
-        info(t("rngCracker.message.abort"));
+        info(this.t("rngCracker.message.abort"));
 
         return this.initCracker();
     }
@@ -88,6 +86,16 @@ export class SeedCracker {
                 // add to worker pool
                 this._WorkerPoolList.push(worker);
             }
+
+            this._IsFirstTime = true;
+
+            this._LastFewSeedsList = [];
+
+            this._FirstInputTimerId = -1;
+            this._FirstInputIsProsessing = false;
+            this._FirstInputDoneThreadsCount = 0;
+            this._FirstInputDoneSeedsCount = 0;
+            this._FirstInputProsessCallback = () => { };
         } catch (error) {
             if (ENV_DEBUG) console.log(error)
             return false;
@@ -96,6 +104,8 @@ export class SeedCracker {
     }
 
     firstInput(bookshelves, slot1, slot2, slot3, progressHandler) {
+        this._FirstInputProsessCallback = progressHandler;
+
         // store the seed cursor while will be used in all workers
         //  Int32Array(4 bytes) and default value is -2147483648
         // NOTE: if we want to write a value to the shared buffer, we should use Atomics.store
@@ -112,14 +122,13 @@ export class SeedCracker {
         this._FirstInputIsProsessing = true;
 
         const seedSharedBufView = new Int32Array(seedSharedBuf);
-        setInterval(() => {
+        this._FirstInputTimerId = setInterval(() => {
             if (this._FirstInputIsProsessing) {
                 // get the percentage of progress
                 const progress = (seedSharedBufView[0] + 2147483648) / 4294967296 * 100;
                 // call the progress handler
-                progressHandler(progress, true);
+                this._FirstInputProsessCallback(progress, true, 0);
             } else {
-                progressHandler(0, false);
                 clearInterval(this._FirstInputTimerId);
             }
         }, 200)
@@ -153,7 +162,7 @@ export class SeedCracker {
     }) {
         this._FirstInputDoneThreadsCount++;
         this._FirstInputDoneSeedsCount += count;
-        if (_FirstInputDoneThreadsCount === this._ThreadCount) {
+        if (this._FirstInputDoneThreadsCount === this._ThreadCount) {
             this._FirstInputIsProsessing = false;
 
             if (ENV_DEBUG) console.log("firstInputDone(before): ", this._FirstInputDoneSeedsCount);
@@ -174,7 +183,8 @@ export class SeedCracker {
 
                 if (ENV_DEBUG) console.log("firstInputDone(after): ", totalCount);
 
-                info(t("rngCracker.message.finished"));
+                info(this.t("rngCracker.message.finished"));
+                this._FirstInputProsessCallback(-1, false, totalCount);
             }
 
             // reset the global states
