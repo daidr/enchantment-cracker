@@ -41,12 +41,12 @@ pub fn first_input(
     slot3: i32,
     core_count: i32,
     seed_buf: js_sys::SharedArrayBuffer,
-    abort_requested_buf: js_sys::SharedArrayBuffer,
+    // abort_requested_buf: js_sys::SharedArrayBuffer,
 ) -> i32 {
     //utils::set_panic_hook();
     let block_size: i32 = 2147483647 / 20 / core_count - 1;
     let seed: js_sys::Int32Array = js_sys::Int32Array::new(&seed_buf);
-    let abort_requested: js_sys::Int8Array = js_sys::Int8Array::new(&abort_requested_buf);
+    // let abort_requested: js_sys::Int8Array = js_sys::Int8Array::new(&abort_requested_buf);
 
     let two_shelves: i32 = booksheleves * 2;
     let half_shelves: i32 = booksheleves / 2 + 1;
@@ -61,11 +61,11 @@ pub fn first_input(
     let mut my_rng = simple_random::SimpleRandom::new();
 
     loop {
-        if js_sys::Atomics::load(&abort_requested, 0).unwrap() == 1 {
-            log("abort requested");
-            // -1 means abort requested
-            return -1;
-        }
+        // if js_sys::Atomics::load(&abort_requested, 0).unwrap() == 1 {
+        //     log("abort requested");
+        //     // -1 means abort requested
+        //     return -1;
+        // }
 
         let cur_seed = js_sys::Atomics::load(&seed, 0).unwrap();
         let last = cur_seed.wrapping_add(block_size);
