@@ -10,8 +10,7 @@
 
   const pageStore = usePageStore();
 
-  const firstInput = inject("firstInput");
-  const abort = inject("abort");
+  const seedCracker = inject("seedCracker");
 
   const bookshelves = ref("");
   const xpcost1 = ref("");
@@ -84,26 +83,72 @@
       return;
     }
 
-    firstInput(
-      bookshelves.value,
-      xpcost1.value,
-      xpcost2.value,
-      xpcost3.value,
-      firstInputProgressHandler
-    );
+    if (seedCracker.isFirstTime()) {
+      seedCracker.firstInput(
+        bookshelves.value,
+        xpcost1.value,
+        xpcost2.value,
+        xpcost3.value,
+        firstInputProgressHandler
+      );
+    }
   };
 
   const onAbortBtnClick = () => {
-    abort();
+    seedCracker.resetCracker();
   };
 
-  const calcProgress = ref(-1);
+  const calcProgress = ref(-2);
 
-  const firstInputProgressHandler = (progress, isProgressing) => {
+  const totalCountLocale = [
+    "enchCrack.remaining",
+    "enchCrack.remaining_thousand",
+    "enchCrack.remaining_million",
+    "enchCrack.remaining_billion",
+  ];
+
+  const totalCountLocaleIndex = ref(0);
+  const totalCount = ref(0);
+  const setTotalCount = (count) => {
+    let factor = 1.0 / 1000;
+    let n = count;
+    let suffix = -1;
+    while (n > 0) {
+      n = Math.floor(n / 1000);
+      factor *= 1000;
+      suffix++;
+    }
+
+    let significand = count / factor;
+    let multiplier = 1;
+    while (significand < 100) {
+      significand *= 10;
+      multiplier *= 10;
+    }
+    significand = Math.round(significand);
+    significand /= multiplier;
+
+    totalCountLocaleIndex.value = suffix;
+    totalCount.value = significand;
+  };
+
+  const firstInputProgressHandler = (
+    progress,
+    isProgressing,
+    _totalCount = 0
+  ) => {
+    console.log(progress, isProgressing, _totalCount);
     if (isProgressing) {
       calcProgress.value = progress;
     } else {
-      calcProgress.value = -1;
+      if (progress == -1) {
+        // 正常完成，应该显示结果
+        calcProgress.value = -1;
+        _totalCount > 0 ? setTotalCount(_totalCount) : (totalCount.value = 0);
+      } else if (progress == -2) {
+        // 被用户取消，即初始状态
+        calcProgress.value = -2;
+      }
     }
   };
 </script>
@@ -166,14 +211,22 @@
       class="check-btn"
       :title="t('enchCrack.check_tooltip')"
       :progress="calcProgress"
-      :progress-mode="calcProgress != -1"
+      :progress-mode="calcProgress > 0"
       @click="onCheckBtnClick"
     >
       <template v-if="calcProgress == -1">
-        {{ t("enchCrack.check") }}
+        <template v-if="totalCount > 0">
+          {{ t(totalCountLocale[totalCountLocaleIndex], [totalCount]) }}
+        </template>
+        <template v-else>
+          {{ t("enchCrack.impossible") }}
+        </template>
       </template>
-      <template v-else>
+      <template v-else-if="calcProgress > 0">
         {{ t("enchCrack.progress", [calcProgress.toFixed(2)]) }}
+      </template>
+      <template v-else-if="calcProgress == -2">
+        {{ t("enchCrack.check") }}
       </template>
     </MCProgressButton>
     <MCButton
