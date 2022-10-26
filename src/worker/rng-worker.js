@@ -1,23 +1,13 @@
 import init, { first_input } from "@rsw/rng-worker";
 
-let CORE_COUNT, CORE_INDEX;
+let THREAD_COUNT, THREAD_INDEX;
 
-async function initEnv({ coreCount, coreIndex } = {}) {
-    CORE_COUNT = coreCount;
-    CORE_INDEX = coreIndex;
+async function initEnv({ threadCount, threadIndex } = {}) {
+    THREAD_COUNT = threadCount;
+    THREAD_INDEX = threadIndex;
     const module = await init();
     module.memory.grow(10000);
-    // const myRNG = SimpleRandom.new();
-    // myRNG.set_seed(2521490391n);
-    // console.log(myRNG.next_int(8));
-    // console.log(myRNG.next_int(8));
-    // console.log(myRNG.next_int(8));
-    // console.log(myRNG.next_int(8));
-    // console.log(myRNG.next_int(8));
-    // console.log(myRNG.next_int(8));
 }
-
-
 
 self.addEventListener('message', (e) => {
     switch (e.data.type) {
@@ -30,19 +20,11 @@ self.addEventListener('message', (e) => {
     }
 })
 
-function firstInput({ bookshelves, slot1, slot2, slot3, seedSharedBuf, abortRequestedSharedBuf }) {
+function firstInput({ bookshelves, slot1, slot2, slot3, seedSharedBuf }) {
     let time = performance.now();
-    let ret = first_input(Number(bookshelves), Number(slot1), Number(slot2), Number(slot3), Number(CORE_COUNT), seedSharedBuf, abortRequestedSharedBuf)
+    let ret = first_input(Number(bookshelves), Number(slot1), Number(slot2), Number(slot3), Number(THREAD_COUNT), seedSharedBuf, abortRequestedSharedBuf)
     console.log(`firstInput took ${performance.now() - time}ms`);
-    if (ret == -1) {
-        // abort
-        self.postMessage({
-            type: 'firstInputAbort',
-            payload: {}
-        });
 
-        return;
-    }
     self.postMessage({
         type: 'firstInputDone',
         payload: {
@@ -52,8 +34,7 @@ function firstInput({ bookshelves, slot1, slot2, slot3, seedSharedBuf, abortRequ
                 slot1,
                 slot2,
                 slot3,
-                seedSharedBuf,
-                abortRequestedSharedBuf
+                seedSharedBuf
             }
         }
     });
